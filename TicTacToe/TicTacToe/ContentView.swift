@@ -17,7 +17,6 @@ struct ContentView: View {
     //creamos array de 9 posiciones con nil y segun se hace click, se cambia a Move
     @State var turnos: [Move?] = Array(repeating: nil, count: 9)
     @State var turnoJugadorPrimero = true
-    
     @State var scoreX : Int = 0
     @State var scoreO : Int = 0
     @State var jugadorActual: Jugador?
@@ -63,14 +62,17 @@ struct ContentView: View {
                                 else{
                                     scoreO = scoreO + 1
                                 }
-                                
-                                ForEach(0..<9){ i in
-                                    turnos[i] = nil
+                                mostrarMessageBox()
+                            }
+                            else {
+                                if comprobrEmpate(turnos: turnos) == true{
+                                    mostrarMessageBox()
                                 }
                             }
                         }
                     }
-                }.padding(-8.0)
+                }.padding(.horizontal, -8.0)
+                .padding(.vertical, -16)
                 
                 Spacer()
                 
@@ -94,7 +96,7 @@ struct ContentView: View {
                 
                 Spacer()
                 
-            }.padding()
+            }.padding(.horizontal, 40)
             
         }
     }
@@ -136,6 +138,45 @@ struct ContentView: View {
                     return true;
                 }
                 return false;
+    }
+    
+    func comprobrEmpate(turnos: [Move?]) -> Bool{
+        var contador = 0
+        ForEach(0..<9){ i in
+            if turnos[i] = nil{
+                contador = contador + 1
+            }
+        }
+        
+        if contador == 0{
+            return true
+        }
+        else{
+            return false
+        }
+    }
+    
+    
+    func mostrarMessageBox(){
+        
+        let alert = UIAlertController(title: "Juego terminado",
+                                      message: "Juego se ha acabado.Quieres continuar??",
+                                      preferredStyle: .alert)
+        
+         // Add action buttons to it and attach handler functions if you want to
+         alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+         alert.addAction(UIAlertAction(title: "Si", style: .default, handler: {
+             
+             For i in 0..<turnos.count{
+                 posicion[i] = nil
+             }
+             scoreO = 0
+             scoreX = 0
+             turnoJugadorPrimero = true
+         }))
+
+        // Show the alert by presenting it
+        self.present(alert, animated: true)
     }
 
 }
