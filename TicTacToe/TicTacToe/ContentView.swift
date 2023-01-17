@@ -112,7 +112,7 @@ struct ContentView: View {
     }
     
     func comprobarGanador(turnos: [Move?]) -> Bool{
-        
+        //comprueba todas posibles combinaciones
         if (turnos[0]?.jugador == turnos[1]?.jugador && turnos[1]?.jugador == turnos[2]?.jugador && (turnos[0] != nil)) {
                     return true;
                 }
@@ -142,13 +142,14 @@ struct ContentView: View {
     
     func comprobrEmpate(turnos: [Move?]) -> Bool{
         var contador = 0
-        ForEach(0..<9){ i in
-            if turnos[i] = nil{
+        //comprobar si hay alguna posicion vacia
+        for i in turnos{
+            if i != nil{
                 contador = contador + 1
             }
         }
         
-        if contador == 0{
+        if contador == 9{
             return true
         }
         else{
@@ -158,17 +159,17 @@ struct ContentView: View {
     
     
     func mostrarMessageBox(){
-        
         let alert = UIAlertController(title: "Juego terminado",
-                                      message: "Juego se ha acabado.Quieres continuar??",
+                                      message: "Juego se ha acabado. Quieres continuar?",
                                       preferredStyle: .alert)
         
-         // Add action buttons to it and attach handler functions if you want to
-         alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
-         alert.addAction(UIAlertAction(title: "Si", style: .default, handler: {
-             
-             For i in 0..<turnos.count{
-                 posicion[i] = nil
+         // Add action buttons to it and attach handler functions
+        alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Si", style: .default, handler: {_ in
+             //boton SI tiene action- limpiar tablero y scores
+            turnos = []
+            for _ in 0..<9{
+                 turnos.append(nil)
              }
              scoreO = 0
              scoreX = 0
@@ -177,6 +178,7 @@ struct ContentView: View {
 
         // Show the alert by presenting it
         self.present(alert, animated: true)
+        
     }
 
 }
