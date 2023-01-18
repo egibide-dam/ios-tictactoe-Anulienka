@@ -20,10 +20,13 @@ struct ContentView: View {
     @State var scoreX : Int = 0
     @State var scoreO : Int = 0
     @State var jugadorActual: Jugador?
+    @State var estaAlerta = false
+    @State var mensaje: String = ""
     
     var body: some View {
         
         VStack{
+            Spacer()
             
             LazyVGrid(columns: matriz){
                 //cambia fila automaticamente, porque puede tener solo 3 columnas
@@ -33,12 +36,12 @@ struct ContentView: View {
                         Rectangle().foregroundColor(Color("Juego"))
                             .frame(width: 100, height: 100)
                             .cornerRadius(10)
-                            .padding()
+                            .padding(.all, 20)
                         //si es nill es vacio, si no pongo indicator
                         Image(systemName: turnos[i]?.indicator ?? "")
                             .resizable()
                             .frame(width: 40, height: 40)
-                            
+                        
                     }.onTapGesture {
                         if comprobarBoton(turnos: turnos, index: i) == false{
                             //identiciar jugador
@@ -58,25 +61,36 @@ struct ContentView: View {
                             if comprobarGanador(turnos: turnos) == true{
                                 if jugadorActual == Jugador.jugador1{
                                     scoreX = scoreX + 1
+                                    estaAlerta = true
+                                    mensaje = "Fin de juego. Ha ganado Jugador X."
+                                    limpiarTablero()
+
                                 }
                                 else{
                                     scoreO = scoreO + 1
+                                    estaAlerta = true
+                                    mensaje = "Fin de juego. Ha ganado Jugador O."
+                                    limpiarTablero()
+
                                 }
-                                mostrarMessageBox()
                             }
                             else {
                                 if comprobrEmpate(turnos: turnos) == true{
-                                    mostrarMessageBox()
+                                    estaAlerta = true
+                                    mensaje = "Fin de juego. Empate!"
+                                    limpiarTablero()
+
                                 }
                             }
                         }
-                    }
-                }.padding(.horizontal, -8.0)
-                .padding(.vertical, -16)
-                
+                    }.padding(.vertical, -20)
+                    
+                }
+                  
                 Spacer()
                 
                 VStack{
+                    
                     HStack{
                         Text(String(format: "\(scoreX)"))
                             .font(.largeTitle)
@@ -93,11 +107,14 @@ struct ContentView: View {
                         Image(systemName: "circle").foregroundColor(Color("Letras"))
                     }
                 }
-                
-                Spacer()
-                
+               
             }.padding(.horizontal, 40)
+            .alert(isPresented: $estaAlerta){
+                Alert(title: Text("Fin de juego"), message: Text("\(mensaje)"), dismissButton: .default(Text("OK")))
+            }
             
+            
+            Spacer()
         }
     }
     
@@ -157,28 +174,11 @@ struct ContentView: View {
         }
     }
     
-    
-    func mostrarMessageBox(){
-        let alert = UIAlertController(title: "Juego terminado",
-                                      message: "Juego se ha acabado. Quieres continuar?",
-                                      preferredStyle: .alert)
-        
-         // Add action buttons to it and attach handler functions
-        alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: "Si", style: .default, handler: {_ in
-             //boton SI tiene action- limpiar tablero y scores
-            turnos = []
-            for _ in 0..<9{
-                 turnos.append(nil)
-             }
-             scoreO = 0
-             scoreX = 0
-             turnoJugadorPrimero = true
-         }))
-
-        // Show the alert by presenting it
-        self.present(alert, animated: true)
-        
+    func limpiarTablero(){
+        turnos = []
+        for _ in 0..<9{
+            turnos.append(nil)
+        }
     }
 
 }
@@ -212,5 +212,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-
-       
